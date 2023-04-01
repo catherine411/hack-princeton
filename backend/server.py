@@ -46,10 +46,10 @@ def index():
 # Route for seeing a data
 
 
-@app.route('/')
-def init():
-    # Returning an api for showing in  reactjs
-    return render_template('test.html')
+# @app.route('/')
+# def init():
+#     # Returning an api for showing in  reactjs
+#     return render_template('test.html')
 
 
 @app.route('/result')
