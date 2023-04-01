@@ -1,11 +1,11 @@
-
 # Import flask and datetime module for showing date and time
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
+import speech_recognition as sr
 import datetime
 import os
 import openai as openai
 
-openai.api_key = os.getenv("sk-")
+openai.api_key = ""
 
 #on port 5000 for now
 #will be on 3000 after linking with react
@@ -14,23 +14,79 @@ openai.api_key = os.getenv("sk-")
 app = Flask(__name__)
   
 # Route for seeing a data
-@app.route('/')
-def init():
-    # Returning an api for showing in  reactjs
-    return render_template('test.html')
+
+from flask import Flask, request
+
+app = Flask(__name__)
+
+# @app.route('/upload', methods=['POST'])
+# def handle_upload():
+#   contents = request.form['contents']
+#   # Do something with the contents
+#   print("hello")
+#   return 'Success'
+
+input = ""
+output = ""
+
+# @app.route("/", methods=["GET"])
+# def init():
+#     # Returning an api for showing in  reactjs
+
+#     transcript = ""
+#     if request.method == "POST":
+#         print("Form Uploaded")
+
+#         if "file" not in request.files:
+#             return redirect(request.url)
+        
+#         file = request.files["file"]
+#         if file.filename == "":
+#             return redirect(request.url)
+        
+#         if file:
+#             recognizer = sr.Recognizer()
+#             audioFile = sr.AudioFile(file)
+#             with audioFile as source:
+#                 data = recognizer.record(source)
+#             transcript = recognizer.recognize_google(data, key=None)
+#             input = transcript
+
+#     return render_template('test.html')
   
-@app.route('/result')
+@app.route('/', methods=["GET", "POST"])
 def get_summary():
+    
+    transcript = ""
+    if request.method == "POST":
+        print("Form Uploaded")
+
+        if "file" not in request.files:
+            return redirect(request.url)
+        
+        file = request.files["file"]
+        if file.filename == "":
+            return redirect(request.url)
+        
+        if file:
+            recognizer = sr.Recognizer()
+            audioFile = sr.AudioFile(file)
+            with audioFile as source:
+                data = recognizer.record(source)
+            transcript = recognizer.recognize_google(data, key=None)
+
     response = openai.Completion.create(
         model="text-davinci-003",
-        prompt="A neutron star is the collapsed core of a massive supergiant star, which had a total mass of between 10 and 25 solar masses, possibly more if the star was especially metal-rich.[1] Neutron stars are the smallest and densest stellar objects, excluding black holes and hypothetical white holes, quark stars, and strange stars.[2] Neutron stars have a radius on the order of 10 kilometres (6.2 mi) and a mass of about 1.4 solar masses.[3] They result from the supernova explosion of a massive star, combined with gravitational collapse, that compresses the core past white dwarf star density to that of atomic nuclei.\n\nTl;dr",
+        prompt= transcript + "\n\nTl;dr",
         temperature=0.7,
         max_tokens=60,
         top_p=1.0,
         frequency_penalty=0.0,
         presence_penalty=1
     )
-    return response['choices'][0]['text']
+    output = response['choices'][0]['text']
+    
+    return  render_template('test.html', transcript = transcript, summary = output)
 
 
 # Running app
