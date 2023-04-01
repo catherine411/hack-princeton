@@ -19,44 +19,11 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-# @app.route('/upload', methods=['POST'])
-# def handle_upload():
-#   contents = request.form['contents']
-#   # Do something with the contents
-#   print("hello")
-#   return 'Success'
-
-input = ""
-output = ""
-
-# @app.route("/", methods=["GET"])
-# def init():
-#     # Returning an api for showing in  reactjs
-
-#     transcript = ""
-#     if request.method == "POST":
-#         print("Form Uploaded")
-
-#         if "file" not in request.files:
-#             return redirect(request.url)
-        
-#         file = request.files["file"]
-#         if file.filename == "":
-#             return redirect(request.url)
-        
-#         if file:
-#             recognizer = sr.Recognizer()
-#             audioFile = sr.AudioFile(file)
-#             with audioFile as source:
-#                 data = recognizer.record(source)
-#             transcript = recognizer.recognize_google(data, key=None)
-#             input = transcript
-
-#     return render_template('test.html')
-  
+# Receive uploaded .wav from html, convert to text
+# Converted text sent to GPT for summarization
 @app.route('/', methods=["GET", "POST"])
 def get_summary():
-    
+    output = ""
     transcript = ""
     if request.method == "POST":
         print("Form Uploaded")
