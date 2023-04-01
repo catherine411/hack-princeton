@@ -22,17 +22,20 @@ function App() {
 
   const handleAudioFileInputChange = (event) => {
     setAudioFile(event.target.files[0]);
+    setAudioTranscript("handleAudioFileInputChange");
   };
 
   const handleAudioUpload = () => {
     setLoading(true);
+    setAudioTranscript("handleAudioFileInputChange");
     const formData = new FormData();
     formData.append("file", audioFile);
-
+    setAudioTranscript("about to call post request");
     axios.post("/audio", formData).then((response) => {
       setAudioTranscript(response.data);
       setLoading(false);
     });
+    setAudioTranscript("called post request");
   };
 
   const handleImageFileInputChange = (event) => {
@@ -78,11 +81,11 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>SumRise</h1>
+        <h1>HTTP: Hurry, To The Point</h1>
         <div>
           <input
             type="file"
-            name="file"
+            name="audioFile"
             accept="audio/*"
             style={{ display: "none" }}
             id="contained-button-file"
