@@ -1,9 +1,10 @@
 
 # Import flask and datetime module for showing date and time
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 import datetime
 import os
 import openai as openai
+import speech_recognition as sr
 
 openai.api_key = os.getenv("sk-")
 
@@ -13,11 +14,33 @@ openai.api_key = os.getenv("sk-")
 # Initializing flask app
 app = Flask(__name__)
   
+@app.route("/test", methods=["GET", "POST"])
+def index():
+    transcript = ""
+    if request.method == "POST":
+        print("Form Uploaded")
+
+        if "file" not in request.files:
+            return redirect(request.url)
+        
+        file = request.files["file"]
+        if file.filename == "":
+            return redirect(request.url)
+        
+        if file:
+            recognizer = sr.Recognizer()
+            audioFile = sr.AudioFile(file)
+            with audioFile as source:
+                data = recognizer.record(source)
+            transcript = recognizer.recognize_google(data, key=None)
+
+    return transcript 
+
 # Route for seeing a data
-@app.route('/')
-def init():
-    # Returning an api for showing in  reactjs
-    return render_template('test.html')
+# @app.route('/data')
+# def init():
+#     # Returning an api for showing in  reactjs
+#     return render_template('test.html')
   
 @app.route('/result')
 def get_summary():

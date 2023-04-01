@@ -2,16 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Speech Recognition in Python</title>
 </head>
 <body>
-    <h1>Upload File</h1>
-    <form method="" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <br>
-        <input type="submit" value="textToBeSummarized"/>
-    </form>
+    <div id="speechContainer">
+        <h1>Upload</h1>
+        <form method="post" enctype="multipart/form-data">
+            <input type="file" name="file" />
+            <br>
+            <input type="submit" value="Transcribe" />
+        </form>
+
+        <div id="SpeechTranscript">
+            <h1>Transcript</h1>
+            <p>{{transcript}}</p>
+        </div>
+    </div>
 </body>
-</html>
