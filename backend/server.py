@@ -8,7 +8,7 @@ from pytesseract import pytesseract
 import openai as openai
 import speech_recognition as sr
 
-openai.api_key = "sk-"
+openai.api_key = "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"
 # will have to install tesseract
 path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 UPLOAD_FOLDER = 'uploads'
@@ -20,71 +20,75 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 # Initializing flask app
 app = Flask(__name__)
 
-
-@app.route("/test", methods=["GET", "POST"])
-def index():
-    transcript = ""
-    if request.method == "POST":
-        print("Form Uploaded")
-
-        if "file" not in request.files:
-            return redirect(request.url)
-
-        file = request.files["file"]
-        if file.filename == "":
-            return redirect(request.url)
-
-        if file:
-            recognizer = sr.Recognizer()
-            audioFile = sr.AudioFile(file)
-            with audioFile as source:
-                data = recognizer.record(source)
-            transcript = recognizer.recognize_google(data, key=None)
-
-    return transcript
-
-# Route for seeing a data
-
-
-# @app.route('/')
-# def init():
-#     # Returning an api for showing in  reactjs
-#     return render_template('test.html')
-
-
-@app.route('/result')
-def get_summary():
-    output = ""
-    transcript = ""
-    if request.method == "POST":
-        print("Form Uploaded")
-
-        if "file" not in request.files:
-            return redirect(request.url)
-
-        file = request.files["file"]
-        if file.filename == "":
-            return redirect(request.url)
-
-        if file:
-            recognizer = sr.Recognizer()
-            audioFile = sr.AudioFile(file)
-            with audioFile as source:
-                data = recognizer.record(source)
-            transcript = recognizer.recognize_google(data, key=None)
-
+def summarize_transcript(input):
     response = openai.Completion.create(
         model="text-davinci-003",
-        prompt=transcript + "\n\nTl;dr",
-        temperature=0.7,
-        max_tokens=60,
+        prompt= input + "\n\nTl;dr",
+        temperature=0,
+        max_tokens=200,
         top_p=1.0,
         frequency_penalty=0.0,
         presence_penalty=1
     )
     output = response['choices'][0]['text']
 
+    return output
+
+    
+# Route for initialize the website
+@app.route("/")
+def index():
+    return render_template("test2.html")
+
+
+# Receive uploaded .wav from html, convert to text
+# Converted text sent to GPT for summarization
+@app.route('/audio', methods=["GET", "POST"])
+def get_audioSummary():
+
+    if request.method == "POST":
+        print("Form Uploaded")
+
+        if "audioFile" not in request.files:
+            return redirect(request.url)
+        
+        file = request.files["audioFile"]
+        if file.filename == "":
+            return redirect(request.url)
+
+        if file:
+            recognizer = sr.Recognizer()
+            audioFile = sr.AudioFile(file)
+            with audioFile as source:
+                data = recognizer.record(source)
+            transcript = recognizer.recognize_google(data, key=None)
+
+        output = summarize_transcript(transcript)
+
     return render_template('test.html', transcript=transcript, summary=output)
+
+@app.route('/text', methods=["GET", "POST"])
+def get_textSummary():
+
+    if request.method == "POST":
+        print("Form Uploaded")
+
+        if "textFile" not in request.files:
+            return redirect(request.url)
+        
+        file = request.files["textFile"]
+        if file.filename == "":
+            return redirect(request.url)
+
+        file = request.files["textFile"]
+        original = file.read()
+
+        transcript = original.decode("utf-8")
+
+        output = summarize_transcript(transcript)
+
+    return render_template('test.html', transcript = transcript, summary = output)
+
 
 
 def allowed_file(filename):
@@ -123,33 +127,29 @@ def init():
     return render_template('test2.html', result=result)
 
 
-# part 2: upload and read text and summarize (does not work, add this)
-def textSummarize():
-    result = ""
-    if request.method == "POST":
-        if "file" not in request.files:
-            return redirect(request.url)
+# # part 2: upload and read text and summarize (does not work, add this)
+# def textSummarize():
+#     result = ""
+#     if request.method == "POST":
+#         if "file" not in request.files:
+#             return redirect(request.url)
 
-        uploaded_file = request.files['file']
-        if uploaded_file:
-            data = uploaded_file.read()
-            result = get_summary(data)
-    return render_template('test.html', result=result)
-
-# for testing if it connects with react stuff
+#         uploaded_file = request.files['file']
+#         if uploaded_file:
+#             data = uploaded_file.read()
+#             result = get_summary(data)
+#     return render_template('test.html', result=result)
 
 
-@app.route('/data')
-def get_time():
-
-    # Returning an api for showing in  reactjs
-    return {
-        'Name': "geek",
-        "Age": "22",
-        "programming": "python"
-    }
 
 
+
+#     return  render_template('test.html', transcript = transcript, summary = output)
+
+
+
+# Receive uploaded .wav from html, convert to text
+# Converted text sent to GPT for summarization
 # Running app
 if __name__ == '__main__':
     app.run(debug=True, threaded=True)
