@@ -14,21 +14,38 @@ function App() {
     programming: "",
   });
 
-  const [file, setFile] = useState(null);
-  const [transcript, setTranscript] = useState("");
+  const [audioFile, setAudioFile] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [audioTranscript, setAudioTranscript] = useState("");
+  const [imageTranscript, setImageTranscript] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleFileInputChange = (event) => {
-    setFile(event.target.files[0]);
+  const handleAudioFileInputChange = (event) => {
+    setAudioFile(event.target.files[0]);
   };
 
-  const handleUpload = () => {
+  const handleAudioUpload = () => {
     setLoading(true);
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", audioFile);
 
-    axios.post("/test", formData).then((response) => {
-      setTranscript(response.data);
+    axios.post("/audio", formData).then((response) => {
+      setAudioTranscript(response.data);
+      setLoading(false);
+    });
+  };
+
+  const handleImageFileInputChange = (event) => {
+    setImageFile(event.target.files[0]);
+  };
+
+  const handleImageUpload = () => {
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("file", imageFile);
+
+    axios.post("/image", formData).then((response) => {
+      setImageTranscript(response.data);
       setLoading(false);
     });
   };
@@ -62,38 +79,88 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>SumRise</h1>
-        {/* Calling a data from setdata for showing */}
-        <input
-          type="file"
-          name="file"
-          accept="audio/*"
-          style={{ display: "none" }}
-          id="contained-button-file"
-          onChange={handleFileInputChange}
-        />
-        <label htmlFor="contained-button-file">
-          <Button variant="contained" color="primary" component="span">
-            Upload Audio File
+        <div>
+          <input
+            type="file"
+            name="file"
+            accept="audio/*"
+            style={{ display: "none" }}
+            id="contained-button-file"
+            onChange={handleAudioFileInputChange}
+          />
+          <label htmlFor="contained-button-file">
+            <Button
+              variant="contained"
+              component="span"
+              style={{
+                backgroundColor: "#F4BFBF",
+              }}
+            >
+              Upload Audio
+            </Button>
+          </label>
+          <br></br>
+          <Button
+            type="submit"
+            variant="contained"
+            onClick={handleAudioUpload}
+            style={{
+              backgroundColor: "#F4BFBF",
+            }}
+          >
+            Transcribe
           </Button>
-        </label>
-        <br></br>
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          onClick={handleUpload}
-        >
-          Transcribe
-        </Button>
-        {loading && <LinearProgress />}
-        {transcript && (
-          <Card variant="outlined">
-            <div>
-              <h5>Transcript:</h5>
-              <p>{transcript}</p>
-            </div>
-          </Card>
-        )}
+          {loading && <LinearProgress />}
+          {audioTranscript && (
+            <Card variant="outlined" style={{ backgroundColor: "#FFE3E1" }}>
+              <div>
+                <h5>Transcript:</h5>
+                <p>{audioTranscript}</p>
+              </div>
+            </Card>
+          )}
+        </div>
+        {/* <div>
+          <input
+            type="file"
+            name="file"
+            accept="image/*"
+            style={{ display: "none" }}
+            id="contained-button-file"
+            onChange={handleImageFileInputChange}
+          />
+          <label htmlFor="contained-button-file">
+            <Button
+              variant="contained"
+              component="span"
+              style={{
+                backgroundColor: "#FFD9C0",
+              }}
+            >
+              Upload Image
+            </Button>
+          </label>
+          <br></br>
+          <Button
+            type="submit"
+            variant="contained"
+            onClick={handleImageUpload}
+            style={{
+              backgroundColor: "#FFD9C0",
+            }}
+          >
+            Transcribe
+          </Button>
+          {loading && <LinearProgress />}
+          {imageTranscript && (
+            <Card variant="outlined" style={{ backgroundColor: "#FFE3E1" }}>
+              <div>
+                <h5>Transcript:</h5>
+                <p>{imageTranscript}</p>
+              </div>
+            </Card>
+          )}
+        </div> */}
       </header>
     </div>
   );
