@@ -21,7 +21,7 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app = Flask(__name__)
 
 
-@app.route("/test", methods=["GET", "POST"])
+@app.route("/audio", methods=["GET", "POST"])
 def index():
     transcript = ""
     if request.method == "POST":
@@ -119,22 +119,22 @@ def init():
             img = Image.open(image_path)
             pytesseract.tesseract_cmd = path_to_tesseract
             text = pytesseract.image_to_string(img)
-            result = text[:-1]
-    return render_template('test2.html', result=result)
+            transcript = text[:-1]
+    return transcript
 
 
 # part 2: upload and read text and summarize (does not work, add this)
-def textSummarize():
-    result = ""
-    if request.method == "POST":
-        if "file" not in request.files:
-            return redirect(request.url)
+# def textSummarize():
+#     result = ""
+#     if request.method == "POST":
+#         if "file" not in request.files:
+#             return redirect(request.url)
 
-        uploaded_file = request.files['file']
-        if uploaded_file:
-            data = uploaded_file.read()
-            result = get_summary(data)
-    return render_template('test.html', result=result)
+#         uploaded_file = request.files['file']
+#         if uploaded_file:
+#             data = uploaded_file.read()
+#             result = get_summary(data)
+#     return render_template('test.html', result=result)
 
 # for testing if it connects with react stuff
 
