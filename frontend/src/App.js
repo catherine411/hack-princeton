@@ -75,43 +75,20 @@ function App() {
 
   const handleTextFileInputChange = (event) => {
     setTextFile(event.target.files[0]);
-  };
+    setUploadSuccess(true);
+    setOpen(true);  };
 
   const handleTextUpload = async () => {
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("textFile", textFile);
-
-    axios.post("/text", formData).then((response) => {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append("textFile", textFile);
+      axios.post("/text", formData).then((response) => {
+        const result = response.data;
+        setTextTranscript(result.slice(0, result.indexOf("SEPARATIONSTRING")));
+        setTextSummary(result.slice(result.indexOf("SEPARATIONSTRING") + 17));
+      });
       setLoading(false);
-    });
-    setLoading(false);
-  };
-
-  // useEffect(() => {
-  //   fetch("/test").then((res) =>
-  //     res.json().then((data) => {
-  //       setTranscript(transcript);
-  //     })
-  //   );
-  // });
-
-  // Using useEffect for single rendering
-  // useEffect(() => {
-  //   // Using fetch to fetch the api from
-  //   // flask server it will be redirected to proxy
-  //   fetch("/test").then((res) =>
-  //     res.json().then((data) => {
-  //       // Setting a data from api
-  //       setdata({
-  //         name: data.Name,
-  //         age: data.Age,
-  //         date: data.Date,
-  //         programming: data.programming,
-  //       });
-  //     })
-  //   );
-  // }, []);
+    };
 
   return (
     <div className="App">
@@ -408,6 +385,34 @@ function App() {
                 </label>
                 <br></br>
                 <br></br>
+
+                <div>
+                  <Collapse in={open}>
+                    <Alert
+                      severity="info"
+                      action={
+                        <IconButton
+                          aria-label="close"
+                          color="inherit"
+                          size="small"
+                          onClick={() => {
+                            setOpen(false);
+                          }}
+                        >
+                          <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                      }
+                      sx={{
+                        mb: 2,
+                        ml: 16,
+                      }}
+                      style={{ width: "40%" }}
+                    >
+                      Upload success
+                    </Alert>
+                  </Collapse>
+                </div>
+
                 <Button
                   type="submit"
                   variant="contained"
@@ -421,12 +426,62 @@ function App() {
               </p>
               {loading && <LinearProgress />}
               {textTranscript && (
-                <Card variant="outlined" style={{ backgroundColor: "#FFE3E1" }}>
-                  <div>
-                    <h5>Transcript:</h5>
-                    <p>{textTranscript}</p>
-                  </div>
+                <div>
+                <Card
+                  raised={true}
+                  variant="outlined"
+                  style={{ backgroundColor: "#FFE3E1" }}
+                  sx={{ borderRadius: "20px", border: 0, boxShadow: 1 }}
+                >
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      Transcript:
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      {textTranscript}
+                    </Typography>
+                  </CardContent>
+                  <CardActions disableSpacing>
+                    <IconButton aria-label="add to favorites">
+                      <FavoriteIcon />
+                    </IconButton>
+                    <IconButton aria-label="share">
+                      <ShareIcon />
+                    </IconButton>
+                  </CardActions>
                 </Card>
+                <br></br>
+                <Card
+                  variant="outlined"
+                  style={{ backgroundColor: "#FFE3E1" }}
+                  sx={{ borderRadius: "20px", border: 0, boxShadow: 1 }}
+                >
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      Summary:
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      component="p"
+                    >
+                      {textSummary}
+                    </Typography>
+                  </CardContent>
+                  <CardActions disableSpacing>
+                    <IconButton aria-label="add to favorites">
+                      <FavoriteIcon />
+                    </IconButton>
+                    <IconButton aria-label="share">
+                      <ShareIcon />
+                    </IconButton>
+                  </CardActions>
+                </Card>
+              </div>
               )}
             </div>
           </Grid>
