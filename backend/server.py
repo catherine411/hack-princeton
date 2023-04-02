@@ -10,7 +10,11 @@ import speech_recognition as sr
 from flask_cors import CORS, cross_origin
 import pdb;
 
+<<<<<<< Updated upstream
 openai.api_key = ""
+=======
+openai.api_key = "sk-"
+>>>>>>> Stashed changes
 
 path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 UPLOAD_FOLDER = 'uploads'
@@ -130,26 +134,6 @@ def init():
         result = transcript + "SEPARATIONSTRING" + summarize_transcript(transcript)
     return result
 
-# # part 2: upload and read text and summarize (does not work, add this)
-# def textSummarize():
-#     result = ""
-#     if request.method == "POST":
-#         if "file" not in request.files:
-#             return redirect(request.url)
-
-#         uploaded_file = request.files['file']
-#         if uploaded_file:
-#             data = uploaded_file.read()
-#             result = get_summary(data)
-#     return render_template('test.html', result=result)
-
-# for testing if it connects with react stuff
-
-
-#     return  render_template('test.html', transcript = transcript, summary = output)
-# Receive uploaded .wav from html, convert to text
-# Converted text sent to GPT for summarization
-# Running app
 if __name__ == '__main__':
     app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True, threaded=True)

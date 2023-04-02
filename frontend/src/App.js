@@ -19,6 +19,10 @@ import ShareIcon from "@material-ui/icons/Share";
 import Collapse from "@mui/material/Collapse";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
+import audioBunny from "./img/audioBunny.png";
+import imageBunny from "./img/imageBunny.png";
+import textBunny from "./img/textBunny.png";
+import halfBunny from "./img/halfBunny.png";
 
 function App() {
   const [audioFile, setAudioFile] = useState(null);
@@ -112,9 +116,18 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>HTTP: Hurry, To The Point</h1>
+        <img src={halfBunny} alt="half bunny" width="200" height="200" />
+        <h1>hop - to - it</h1>
         <Grid container spacing={2} columns={15}>
           <Grid item xs={5}>
+            <div>
+              <img
+                src={audioBunny}
+                alt="audio bunny"
+                width="100"
+                height="100"
+              />
+            </div>
             <div>
               <p>
                 <input
@@ -243,6 +256,9 @@ function App() {
           </Grid>
           <Grid item xs={5}>
             <div>
+              <img src={imageBunny} alt="img bunny" width="100" height="100" />
+            </div>
+            <div>
               <p>
                 <input
                   type="file"
@@ -366,6 +382,9 @@ function App() {
             </div>
           </Grid>
           <Grid item xs={5}>
+            <div>
+              <img src={textBunny} alt="text bunny" width="100" height="100" />
+            </div>
             <div>
               <p>
                 <input
