@@ -9,21 +9,12 @@ import openai as openai
 import speech_recognition as sr
 from flask_cors import CORS, cross_origin
 
-<<<<<<< HEAD
-openai.api_key = "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"
+openai.api_key = "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"
 
-=======
-openai.api_key = "sk-"
->>>>>>> 9fe7beeac544ed4bd9fded77d44b27bd3bf433f8
-# will have to install tesseract
 path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
-# on port 5000 for now
-# will be on 3000 after linking with react
-
-# Initializing flask app
 app = Flask(__name__)
 CORS(app)
 
@@ -39,14 +30,8 @@ def summarize_transcript(input):
         presence_penalty=1
     )
     output = response['choices'][0]['text']
-
+    print(output)
     return output
-
-
-# Route for initialize the website
-@app.route("/")
-def index():
-    return render_template("test.html")
 
 
 # Receive uploaded .wav from html, convert to text
@@ -54,7 +39,7 @@ def index():
 @app.route('/audio', methods=["GET", "POST"])
 @cross_origin()
 def get_audioSummary():
-    transcript = ""
+    transcript = "test"
     if request.method == "POST":
         print("Form Uploaded")
         transcript = "post method??"
@@ -75,9 +60,9 @@ def get_audioSummary():
                 data = recognizer.record(source)
             transcript = recognizer.recognize_google(data, key=None)
 
-        # summary = summarize_transcript(transcript)
-        # result = transcript + 'SEPARATIONSTRING' + summary
-    return transcript
+        summary = summarize_transcript(transcript)
+        result = transcript + 'SEPARATIONSTRING' + summary
+    return result
 
 
 @app.route('/text', methods=["GET", "POST"])
@@ -100,7 +85,7 @@ def get_textSummary():
 
         output = summarize_transcript(transcript)
 
-    return render_template('test.html', transcript=transcript, summary=output)
+    return transcript
 
 
 def allowed_file(filename):
@@ -138,7 +123,7 @@ def init():
             transcript = text[:-1]
 
         output = summarize_transcript(transcript)
-    return render_template('test.html', transcript = transcript, summary = output)
+    return transcript
 
 
 # # part 2: upload and read text and summarize (does not work, add this)
