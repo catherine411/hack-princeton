@@ -23,9 +23,13 @@ import axios from "axios";
 function App() {
   const [audioFile, setAudioFile] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const [textFile, setTextFile] = useState(null);
   const [audioTranscript, setAudioTranscript] = useState("");
   const [audioSummary, setAudioSummary] = useState("");
   const [imageTranscript, setImageTranscript] = useState("");
+  const [imageSummary, setImageSummary] = useState("");  
+  const [textSummary, setTextSummary] = useState("");
+  const [textTranscript, setTextTranscript] = useState("");
   const [loading, setLoading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [open, setOpen] = useState(false);
@@ -52,13 +56,29 @@ function App() {
     setImageFile(event.target.files[0]);
   };
 
-  const handleImageUpload = () => {
+  const handleImageUpload = async () => {
     setLoading(true);
     const formData = new FormData();
     formData.append("imageFile", imageFile);
 
     axios.post("/image", formData).then((response) => {
-      setImageTranscript(response.data);
+      const result = response.data;
+      setImageTranscript(result.slice(0, result.indexOf("SEPARATIONSTRING")));
+      setImageSummary(result.slice(result.indexOf("SEPARATIONSTRING") + 17));
+    });
+    setLoading(false);
+  };
+
+  const handleTextFileInputChange = (event) => {
+    setTextFile(event.target.files[0]);
+  };
+
+  const handleTextUpload = async () => {
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("textFile", textFile);
+
+    axios.post("/text", formData).then((response) => {
       setLoading(false);
     });
     setLoading(false);
@@ -226,13 +246,13 @@ function App() {
               <p>
                 <input
                   type="file"
-                  name="file"
+                  name="imageFile"
                   accept="image/*"
                   style={{ display: "none" }}
-                  id="contained-button-file"
+                  id="contained-button-file2"
                   onChange={handleImageFileInputChange}
                 />
-                <label htmlFor="contained-button-file">
+                <label htmlFor="contained-button-file2">
                   <Button
                     variant="contained"
                     component="span"
@@ -245,6 +265,33 @@ function App() {
                 </label>
                 <br></br>
                 <br></br>
+                <div>
+                  <Collapse in={open}>
+                      <Alert
+                        severity="info"
+                        action={
+                          <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() => {
+                              setOpen(false);
+                            }}
+                          >
+                            <CloseIcon fontSize="inherit" />
+                          </IconButton>
+                        }
+                        sx={{
+                          mb: 2,
+                          ml: 16,
+                        }}
+                        style={{ width: "40%" }}
+                      >
+                        Upload success
+                      </Alert>
+                  </Collapse>
+                </div>
+
                 <Button
                   type="submit"
                   variant="contained"
@@ -256,14 +303,65 @@ function App() {
                   Transcribe
                 </Button>
               </p>
+              {loading && <CircularProgress />}
               {loading && <LinearProgress />}
               {imageTranscript && (
-                <Card variant="outlined" style={{ backgroundColor: "#FFE3E1" }}>
-                  <div>
-                    <h5>Transcript:</h5>
-                    <p>{imageTranscript}</p>
-                  </div>
-                </Card>
+                <div>
+                  <Card
+                    raised={true}
+                    variant="outlined"
+                    style={{ backgroundColor: "#FFE3E1" }}
+                    sx={{ borderRadius: "20px", border: 0, boxShadow: 1 }}
+                  >
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        Transcript:
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        {imageTranscript}
+                      </Typography>
+                    </CardContent>
+                    <CardActions disableSpacing>
+                      <IconButton aria-label="add to favorites">
+                        <FavoriteIcon />
+                      </IconButton>
+                      <IconButton aria-label="share">
+                        <ShareIcon />
+                      </IconButton>
+                    </CardActions>
+                  </Card>
+                  <br></br>
+                  <Card
+                    variant="outlined"
+                    style={{ backgroundColor: "#FFE3E1" }}
+                    sx={{ borderRadius: "20px", border: 0, boxShadow: 1 }}
+                  >
+                    <CardContent>
+                      <Typography gutterBottom variant="h5" component="h2">
+                        Summary:
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="textSecondary"
+                        component="p"
+                      >
+                        {imageSummary}
+                      </Typography>
+                    </CardContent>
+                    <CardActions disableSpacing>
+                      <IconButton aria-label="add to favorites">
+                        <FavoriteIcon />
+                      </IconButton>
+                      <IconButton aria-label="share">
+                        <ShareIcon />
+                      </IconButton>
+                    </CardActions>
+                  </Card>
+                </div>
               )}
             </div>
           </Grid>
@@ -272,13 +370,13 @@ function App() {
               <p>
                 <input
                   type="file"
-                  name="file"
-                  accept="image/*"
+                  name="textFile"
+                  accept="txt/*"
                   style={{ display: "none" }}
-                  id="contained-button-file"
-                  onChange={handleImageFileInputChange}
+                  id="contained-button-file3"
+                  onChange={handleTextFileInputChange}
                 />
-                <label htmlFor="contained-button-file">
+                <label htmlFor="contained-button-file3">
                   <Button
                     variant="contained"
                     component="span"
@@ -294,7 +392,7 @@ function App() {
                 <Button
                   type="submit"
                   variant="contained"
-                  onClick={handleImageUpload}
+                  onClick={handleTextUpload}
                   style={{
                     backgroundColor: "#C7E9B0",
                   }}
@@ -303,11 +401,11 @@ function App() {
                 </Button>
               </p>
               {loading && <LinearProgress />}
-              {imageTranscript && (
+              {textTranscript && (
                 <Card variant="outlined" style={{ backgroundColor: "#FFE3E1" }}>
                   <div>
                     <h5>Transcript:</h5>
-                    <p>{imageTranscript}</p>
+                    <p>{textTranscript}</p>
                   </div>
                 </Card>
               )}

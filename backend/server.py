@@ -8,14 +8,16 @@ from pytesseract import pytesseract
 import openai as openai
 import speech_recognition as sr
 from flask_cors import CORS, cross_origin
+import pdb;
 
-openai.api_key = "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"
+openai.api_key = ""
 
 path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 app = Flask(__name__)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 CORS(app)
 
 
@@ -83,7 +85,7 @@ def get_textSummary():
 
         transcript = original.decode("utf-8")
 
-        output = summarize_transcript(transcript)
+        summarize_transcript(transcript)
 
     return transcript
 
@@ -99,10 +101,13 @@ def allowed_file(filename):
 @app.route('/image', methods=["GET", "POST"])
 def init():
     filename = ""
-    result = ""
+    transcript = ""
+    # pdb. set_trace()
     if request.method == 'POST':
+        # pdb. set_trace()
         # check if the post request has the file part
         if 'imageFile' not in request.files:
+            # pdb. set_trace()
             flash('No file part')
             return redirect(request.url)
         file = request.files['imageFile']
@@ -111,20 +116,19 @@ def init():
         if file.filename == '':
             flash('No selected file')
             return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
-            # return redirect(url_for('uploaded_file',filename=filename))
-            # convert image to text
-            image_path = UPLOAD_FOLDER + "/" + file.filename
-            img = Image.open(image_path)
-            pytesseract.tesseract_cmd = path_to_tesseract
-            text = pytesseract.image_to_string(img)
-            transcript = text[:-1]
 
-        output = summarize_transcript(transcript)
-    return transcript
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(UPLOAD_FOLDER, filename))
+        # return redirect(url_for('uploaded_file',filename=filename))
+        # convert image to text
+        image_path = UPLOAD_FOLDER + "/" + file.filename
+        img = Image.open(image_path)
+        pytesseract.tesseract_cmd = path_to_tesseract
+        text = pytesseract.image_to_string(img)
+        transcript = text[:-1]
 
+        result = transcript + "SEPARATIONSTRING" + summarize_transcript(transcript)
+    return result
 
 # # part 2: upload and read text and summarize (does not work, add this)
 # def textSummarize():
@@ -147,4 +151,5 @@ def init():
 # Converted text sent to GPT for summarization
 # Running app
 if __name__ == '__main__':
+    app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True, threaded=True)
