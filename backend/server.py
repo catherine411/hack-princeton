@@ -9,7 +9,12 @@ import openai as openai
 import speech_recognition as sr
 from flask_cors import CORS, cross_origin
 
+<<<<<<< HEAD
+openai.api_key = "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"
+
+=======
 openai.api_key = "sk-"
+>>>>>>> 9fe7beeac544ed4bd9fded77d44b27bd3bf433f8
 # will have to install tesseract
 path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 UPLOAD_FOLDER = 'uploads'
@@ -112,10 +117,10 @@ def init():
     result = ""
     if request.method == 'POST':
         # check if the post request has the file part
-        if 'file' not in request.files:
+        if 'imageFile' not in request.files:
             flash('No file part')
             return redirect(request.url)
-        file = request.files['file']
+        file = request.files['imageFile']
         # if user does not select file, browser also
         # submit an empty part without filename
         if file.filename == '':
@@ -131,7 +136,9 @@ def init():
             pytesseract.tesseract_cmd = path_to_tesseract
             text = pytesseract.image_to_string(img)
             transcript = text[:-1]
-    return transcript
+
+        output = summarize_transcript(transcript)
+    return render_template('test.html', transcript = transcript, summary = output)
 
 
 # # part 2: upload and read text and summarize (does not work, add this)
