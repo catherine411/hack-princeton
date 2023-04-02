@@ -49,7 +49,7 @@ def index():
 @app.route('/audio', methods=["GET", "POST"])
 @cross_origin()
 def get_audioSummary():
-    transcript = "testing"
+    transcript = ""
     if request.method == "POST":
         print("Form Uploaded")
         transcript = "post method??"
@@ -71,7 +71,6 @@ def get_audioSummary():
             transcript = recognizer.recognize_google(data, key=None)
 
         # summary = summarize_transcript(transcript)
-        print(transcript)
         # result = transcript + 'SEPARATIONSTRING' + summary
     return transcript
 

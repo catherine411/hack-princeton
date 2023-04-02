@@ -17,25 +17,23 @@ function App() {
   const [audioFile, setAudioFile] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [audioTranscript, setAudioTranscript] = useState("");
+  const [audioSummary, setAudioSummary] = useState("");
   const [imageTranscript, setImageTranscript] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleAudioFileInputChange = (event) => {
     setAudioFile(event.target.files[0]);
-    setAudioTranscript("handleAudioFileInputChange");
   };
 
-  const handleAudioUpload = () => {
+  const handleAudioUpload = async () => {
     setLoading(true);
-    setAudioTranscript("handleAudioFileInputChange");
     const formData = new FormData();
-    formData.append("file", audioFile);
-    setAudioTranscript("about to call post request");
+    formData.append("audioFile", audioFile);
     axios.post("/audio", formData).then((response) => {
       setAudioTranscript(response.data);
       setLoading(false);
     });
-    setAudioTranscript("called post request");
+    setLoading(false);
   };
 
   const handleImageFileInputChange = (event) => {
@@ -45,12 +43,13 @@ function App() {
   const handleImageUpload = () => {
     setLoading(true);
     const formData = new FormData();
-    formData.append("file", imageFile);
+    formData.append("imageFile", imageFile);
 
     axios.post("/image", formData).then((response) => {
       setImageTranscript(response.data);
       setLoading(false);
     });
+    setLoading(false);
   };
 
   // useEffect(() => {
@@ -115,12 +114,20 @@ function App() {
           </Button>
           {loading && <LinearProgress />}
           {audioTranscript && (
-            <Card variant="outlined" style={{ backgroundColor: "#FFE3E1" }}>
-              <div>
-                <h5>Transcript:</h5>
-                <p>{audioTranscript}</p>
-              </div>
-            </Card>
+            <div>
+              <Card variant="outlined" style={{ backgroundColor: "#FFE3E1" }}>
+                <div>
+                  <h5>Transcript:</h5>
+                  <p>{audioTranscript}</p>
+                </div>
+              </Card>
+              <Card variant="outlined" style={{ backgroundColor: "#FFE3E1" }}>
+                <div>
+                  <h5>Summary:</h5>
+                  <p>{audioSummary}</p>
+                </div>
+              </Card>
+            </div>
           )}
         </div>
         {/* <div>
