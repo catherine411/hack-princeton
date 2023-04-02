@@ -10,11 +10,7 @@ import speech_recognition as sr
 from flask_cors import CORS, cross_origin
 import pdb;
 
-<<<<<<< Updated upstream
-openai.api_key = ""
-=======
-openai.api_key = "sk-"
->>>>>>> Stashed changes
+openai.api_key = "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"
 
 path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 UPLOAD_FOLDER = 'uploads'
